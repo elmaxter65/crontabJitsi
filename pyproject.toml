@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "hello-function"
+version = "0.1.0"
+description = ""
+authors = ["Tu Nombre <tu@correo.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^2.3"
+google-cloud-firestore = "^2.12"
+pyjwt = "^2.8"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
