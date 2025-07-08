@@ -1,10 +1,8 @@
-# Configuración de entorno para hello_function
-
-# Clave secreta usada para verificar tokens JWT
-JWT_SECRET=supersecretkey123
-
 # Clave para acceso vía parámetro `?key=`
 API_KEY=myapikey
 
 # Puerto por defecto para desarrollo local
 PORT=8080
+
+# Ruta al archivo de credenciales de Google Cloud
+GOOGLE_APPLICATION_CREDENTIALS=./credenciales.json

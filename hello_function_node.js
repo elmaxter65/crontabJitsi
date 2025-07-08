@@ -5,25 +5,22 @@ const jwt = require('jsonwebtoken');
 const app = express();
 app.use(express.json());
 
-const firestore = new Firestore();
 let executionCount = 0;
 let isRunning = false;
 
-const SECRET_KEY = process.env.JWT_SECRET || 'mysecret';
 const API_KEY = process.env.API_KEY || 'myapikey';
+const GOOGLE_APPLICATION_CREDENTIALS = process.env.GOOGLE_APPLICATION_CREDENTIALS || './credenciales.json';
+
+// Configurar autenticación explícita para Firestore usando la clave de servicio
+const firestore = new Firestore({
+  keyFilename: GOOGLE_APPLICATION_CREDENTIALS
+});
 
 // Middleware: validate JWT or API Key
 authMiddleware = (req, res, next) => {
   const authHeader = req.headers['authorization'] || '';
-  const token = authHeader.split(' ')[1];
-  const apiKey = req.query.key;
-
-  if (token) {
-    jwt.verify(token, SECRET_KEY, (err) => {
-      if (err) return res.status(403).send('Token inválido');
-      return next();
-    });
-  } else if (apiKey === API_KEY) {
+  console.log('GOOGLE_APPLICATION_CREDENTIALS:', process.env.GOOGLE_APPLICATION_CREDENTIALS);
+  if (authHeader === API_KEY) {
     return next();
   } else {
     return res.status(401).send('No autorizado');
@@ -50,7 +47,14 @@ app.get('/', authMiddleware, async (req, res) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const duration = Date.now() - start;
-
+    try {
+      // Verificar conexión con Firestore
+      await firestore.collection('test_connection').limit(1).get();
+      console.log('Conexión con Firestore exitosa');
+    } catch (err) {
+      console.error('Error de conexión con Firestore:', err);
+      throw new Error('No se pudo conectar a la base de datos');
+    }
     // Guardar en Firestore
     await firestore.collection('metrics').add({
       timestamp: new Date(),
