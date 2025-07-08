@@ -53,25 +53,6 @@ npm install express @google-cloud/firestore jsonwebtoken
 node hello_function_node.js
 ```
 
-### Despliegue en Cloud Run:
-```bash
-gcloud builds submit --tag gcr.io/[PROJECT_ID]/hello-node
-gcloud run deploy hello-node \
-  --image gcr.io/[PROJECT_ID]/hello-node \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated
-```
-
----
-
-## 🔐 Autenticación
-
-Ambas versiones permiten dos métodos de autenticación:
-- API Key: `?key=your_api_key`
-- JWT Token: `Authorization: Bearer <token>`
-
----
 
 ## 🧪 Funcionalidades destacadas
 

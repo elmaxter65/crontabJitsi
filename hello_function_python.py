@@ -4,31 +4,25 @@ import os
 import time
 import jwt
 from functools import wraps
+from google.oauth2 import service_account
 
+credentials = service_account.Credentials.from_service_account_file(
+    './credenciales.json')
+db = firestore.Client(credentials=credentials)
 app = Flask(__name__)
-db = firestore.Client()
 
 execution_count = 0
 is_running = False
 
-SECRET_KEY = os.environ.get('JWT_SECRET', 'mysecret')
 API_KEY = os.environ.get('API_KEY', 'myapikey')
 
 # Middleware para autenticación
 def auth_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization', '').replace('Bearer ', '')
-        key = request.args.get('key')
-
-        if token:
-            try:
-                jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-            except jwt.ExpiredSignatureError:
-                return jsonify({"error": "Token expirado"}), 403
-            except jwt.InvalidTokenError:
-                return jsonify({"error": "Token inválido"}), 403
-        elif key != API_KEY:
+        token = request.headers.get('Authorization', '')
+        print(f"Token recibido: {token}")
+        if token != API_KEY:
             return jsonify({"error": "No autorizado"}), 401
 
         return f(*args, **kwargs)
